@@ -18,12 +18,16 @@
       state: present
       force_source: yes
       debug: yes
+      buildargs:
+        MATRIX_CREATE_TOKEN: "{{MATRIX_CREATE_TOKEN}}"
 
   - name: restart docker image
     become: true
     docker_container:
       name: matrix_register_backend
       image: matrix_register_backend
+      env:
+        MATRIX_CREATE_TOKEN: "{{MATRIX_CREATE_TOKEN}}"
       recreate: yes
       ports:
         - "49171:3001"
