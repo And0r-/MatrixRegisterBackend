@@ -4,6 +4,12 @@ const cors = require('cors');
 const app = express()
 const PORT = 3001
 
+const axios = require('axios');
+var generator = require('generate-password');
+const { User } = require('./user')
+const dotenv = require('dotenv');
+dotenv.config();
+
 app.use(cors());
 app.use(express.json());
 
@@ -53,19 +59,68 @@ const configs = {
 
 app.get('/config/:token', (req, res) => {
   if (req.params.token in configs) {
-  res.send({token: req.params.token, ...configs[req.params.token]});
+    res.send({ token: req.params.token, ...configs[req.params.token] });
   } else {
-    res.status(500).send({error: "token not valid"});
+    res.status(500).send({ error: "token not valid" });
   }
 });
 
-app.post('/register', function (req, res) {
-  let register = {};
-  register.answer = "alles ok, user ist registriert, Mail ist versendet";
-  res.send(register);
+app.post('/register', async (req, res) => {
+  // Check is token valid
+  if (req.body.token in configs) {
+
+    let id = req.body.name.toLowerCase().replace(/[^a-z0-9 ]/g, "");
+    id = await getAvailableId(id, 0);
+
+    let password = generator.generate({
+      length: 10,
+      numbers: true
+    });
+
+    let user = new User(id, password, req.body.name, req.body.email, req.body.phone);
+    user.createUser();
+
+    
+
+
+    res.send({ answer: "alles ok, user ist registriert, Mail ist versendet" });
+
+
+  } else {
+    res.status(500).send({ error: "token not valid" });
+  }
 });
 
 app.listen(PORT, () => {
   console.log(`Example app listening at http://localhost:${PORT}`)
 });
 
+
+
+async function getAvailableId(id_tag, count) {
+  let id = '@' + id_tag + "" + (count || "") + ':iot-schweiz.ch';
+  return await axios.get('https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + id,
+    {
+      headers: {
+        'Authorization': 'Bearer '+process.env.MATRIX_CREATE_TOKEN
+      },
+      validateStatus: function (status) {
+        return status === 404 || status === 200; // Reject only if the status code is greater than or equal to 500
+      }
+    })
+    .then(async res => {
+      if (res.status === 404) {
+        console.log("return " + id);
+        return id
+      } else if (res.status === 200) {
+        console.log("id already exist, add counter");
+        return await getAvailableId(id_tag, count + 1);
+      }
+    }
+    )
+    .catch(error => {
+      console.log("error..." + error)
+      return undefined;
+
+    });
+}
