@@ -10,15 +10,16 @@ steps:
   - node --check app.js
   # run tests
 
-- name: migrate db
-  image: node
-  environment:
-    DATABASE_URL:
-      from_secret: DATABASE_URL
-  commands:
-  - npm install
-  - ip a
-  - npx prisma migrate deploy
+# no database at this moment
+# - name: migrate db
+#   image: node
+#   environment:
+#     DATABASE_URL:
+#       from_secret: DATABASE_URL
+#   commands:
+#   - npm install
+#   - ip a
+#   - npx prisma migrate deploy
 
 - name: deploy
   image: plugins/ansible:1
