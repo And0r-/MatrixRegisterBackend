@@ -1,0 +1,33 @@
+# playbook.yml
+- name: deploy backend to host
+  hosts: backend
+
+  tasks:
+  - name: checkout backend code on host
+    git:
+      repo: git@github.com:And0r-/MatrixRegisterBackend.git
+      dest: ~/projects/MatrixRegisterBackend
+
+  - name: build docker image
+    become: true
+    docker_image:
+      name: matrix_register_backend
+      build:
+        path: /home/andreas/projects/MatrixRegisterBackend
+      source: build
+      state: present
+      force_source: yes
+      debug: yes
+      buildargs:
+        DATABASE_URL: "{{DATABASE_URL}}"
+
+  - name: restart docker image
+    become: true
+    docker_container:
+      name: matrix_register_backend
+      image: matrix_register_backend
+      env:
+        DATABASE_URL: "{{DATABASE_URL}}"
+      recreate: yes
+      ports:
+        - "49171:80"

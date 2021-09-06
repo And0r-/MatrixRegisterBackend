@@ -1,0 +1,50 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: tests
+  image: node
+  commands:
+  - npm install
+  - node --check app.js
+  # run tests
+
+- name: migrate db
+  image: node
+  environment:
+    DATABASE_URL:
+      from_secret: DATABASE_URL
+  commands:
+  - npm install
+  - ip a
+  - npx prisma migrate deploy
+
+- name: deploy
+  image: plugins/ansible:1
+  settings:
+    playbook: .ansible/playbook.yml
+    inventory: .ansible/inventory.yml
+    # syntax_check: true
+    private_key:
+      from_secret: ansible_private_key
+    # vault_password:
+    #   from_secret: ansible_vault_password
+    extra_vars:
+      from_secret: ANSIBLE_EXTRA_VARS
+  when:
+    event:
+    - push
+    # - tag
+
+- name: send telegram notification
+  image: appleboy/drone-telegram
+  settings:
+    token:
+      from_secret: telegram_token
+    to:
+      from_secret: telegram_user_id
+  when:
+    status:
+    - success
+    - failure
