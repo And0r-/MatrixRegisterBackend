@@ -18,16 +18,12 @@
       state: present
       force_source: yes
       debug: yes
-      buildargs:
-        DATABASE_URL: "{{DATABASE_URL}}"
 
   - name: restart docker image
     become: true
     docker_container:
       name: matrix_register_backend
       image: matrix_register_backend
-      env:
-        DATABASE_URL: "{{DATABASE_URL}}"
       recreate: yes
       ports:
         - "49171:80"

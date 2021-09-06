@@ -3,7 +3,7 @@ all:
   hosts:
     droid.fdh.li:
   children:
-    dev-backend:
+    backend:
       hosts:
         172.17.0.1:
       vars:
