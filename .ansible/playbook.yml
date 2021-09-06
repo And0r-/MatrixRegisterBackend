@@ -26,4 +26,4 @@
       image: matrix_register_backend
       recreate: yes
       ports:
-        - "49171:80"
+        - "49171:3001"
