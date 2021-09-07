@@ -20,6 +20,7 @@
       debug: yes
       buildargs:
         MATRIX_CREATE_TOKEN: "{{MATRIX_CREATE_TOKEN}}"
+        MAIL_PASSWORD: "{{MAIL_PASSWORD}}"
 
   - name: restart docker image
     become: true
@@ -28,6 +29,7 @@
       image: matrix_register_backend
       env:
         MATRIX_CREATE_TOKEN: "{{MATRIX_CREATE_TOKEN}}"
+        MAIL_PASSWORD: "{{MAIL_PASSWORD}}"
       recreate: yes
       ports:
         - "49171:3001"
