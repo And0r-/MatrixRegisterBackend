@@ -46,6 +46,8 @@ class User {
                 console.log(error.response.data);
             });
 
+        await sleep(4000);
+
         let body2 = { threepids: [] };
 
         // add phone to body
@@ -96,10 +98,50 @@ class User {
             from: 'matrix@iot-schweiz.ch',
             to: this.email,
             subject: 'IOT Matrix login data',
-            html: '<h1>User is created</h1><br>you can use one of this clients....<br>...<br>...<br>...<br><br>or use matrix.iot-schweiz.ch<br><br>user: '+this.id+"<br>pw: "+this.pw
+            html: '<h1>User is created</h1><br>you can use one of this clients....<br>...<br>...<br>...<br><br>or use matrix.iot-schweiz.ch<br><br>user: ' + this.id + "<br>pw: " + this.pw
         });
 
     }
+
+
+    async joinToRooms(rooms) {
+        console.log("wait to join user to channel")
+        await sleep(5000);
+        console.log("start joining to channels")
+        // set request url
+
+        // set axios request config
+        let config = {
+            headers: {
+                'Authorization': 'Bearer ' + process.env.MATRIX_CREATE_TOKEN
+            }
+        }
+        let body = { user_id: this.id }
+        console.log(body);
+
+        rooms.forEach(async function (room) {
+
+            let url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v1/join/' + room;
+            console.log(url);
+
+            await axios.post(url, body, config)
+                .then(res => {
+                    console.log(res.data);
+                })
+                .catch(error => {
+                    console.log("error..." + error)
+                    console.log(error.response.data);
+                });
+        })
+    }
+
+}
+
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
 }
 
 module.exports = { User }

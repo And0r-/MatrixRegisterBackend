@@ -16,7 +16,11 @@ app.use(express.json());
 const configs = {
   TestTokenCH: {
     country: "ch",
-    channels: ["IOT", "CH"],
+    rooms: [
+      "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
+      "!DiQNcPqjRCtZQbNnlM:iot-schweiz.ch", //CH
+      "!RVPkskcwvvHMACiYPR:iot-schweiz.ch", // CH test raum
+    ],
     registrationText: "IOT matrix registrierung",
     nameLabel: "Anzeigenamen",
     emailLabel: "Email",
@@ -24,9 +28,13 @@ const configs = {
     submitLabel: "Registrieren",
     doneText: "Jea registrierung erfolgreich, du bekommst infos und passwort via Mail... <br />Wir sehen uns in Matrix <3",
   },
-  TestTokenD: {
+  TestTokenDE: {
     country: "de",
-    channels: ["IOT", "D"],
+    rooms: [
+      "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
+      "!KrEzIiFMEGnrdOaauN:iot-schweiz.ch", //DE
+      "!dXPYjnDzWXdUCWavld:iot-schweiz.ch", // DE test raum
+    ],
     registrationText: "IOT matrix registrierung",
     nameLabel: "Anzeigenamen",
     emailLabel: "Email",
@@ -36,7 +44,11 @@ const configs = {
   },
   TestTokenAT: {
     country: "at",
-    channels: ["IOT", "AT"],
+    rooms: [
+      "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
+      "!fRxdpedTZwovugGXpU:iot-schweiz.ch", //AT
+      "!VijvfDLvAgWsjMnHft:iot-schweiz.ch", // AT test raum
+    ],
     registrationText: "IOT matrix registrierung",
     nameLabel: "Anzeigenamen",
     emailLabel: "Email",
@@ -46,7 +58,9 @@ const configs = {
   },
   TestTokenUS: {
     country: "us",
-    channels: ["IOT", "US"],
+    rooms: [
+      "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
+    ],
     registrationText: "Register for the ultimate IOT matrix chat",
     nameLabel: "Display Name",
     emailLabel: "Email",
@@ -79,6 +93,8 @@ app.post('/register', async (req, res) => {
 
     let user = new User(id, password, req.body.name, req.body.email, req.body.phone);
     user.createUser();
+
+    await user.joinToRooms(configs[req.body.token].rooms);
 
     
 
