@@ -7,7 +7,7 @@ const PORT = 3001
 const axios = require('axios');
 var generator = require('generate-password');
 const { User } = require('./user');
-var tokens = require('./tokens');
+var tokens = require('./data/tokens');
 const dotenv = require('dotenv');
 dotenv.config();
 
