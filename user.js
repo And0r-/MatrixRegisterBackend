@@ -33,8 +33,9 @@ class User {
 
 
     async _getAvailableId(displayname, count) {
+        if (count === 1) {count++}
         console.log("get id "+this.token);
-        let id = '@' + displayname.toLowerCase().replace(/[^a-z0-9 ]/g, "") + "" + (count || "") + ':iot-schweiz.ch';
+        let id = '@' + displayname.toLowerCase().replace(/[^a-z0-9]/g, "") + "" + (count || "") + ':iot-schweiz.ch';
         await axios.get('https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + id,
           {
             headers: {
@@ -48,10 +49,10 @@ class User {
             if (res.status === 404) {
               console.log("return " + id);
               this.id = id;
-              this.login_name = displayname + "" + (count || "");
+              this.login_name = (displayname + "" + (count || "")).replace(/[^a-zA-Z0-9]/g, "");
             } else if (res.status === 200) {
               console.log("id already exist, add counter");
-              await getAvailableId(name, count + 1);
+              await this._getAvailableId(displayname, count + 1);
             }
           }
           )
