@@ -3,9 +3,11 @@ var generator = require('generate-password');
 const dotenv = require('dotenv');
 dotenv.config();
 const nodemailer = require("nodemailer");
+var app_config = require('./app_config');
+var tokens = require('./tokens');
 
 class User {
-    constructor(displayname, pw, email, phone) {
+    constructor(displayname, pw, email, phone, usertoken) {
         this.displayname = displayname;
         this.pw = pw;
         this.email = email;
@@ -14,11 +16,11 @@ class User {
         this.access_token;
         this.id;
         this.login_name;
-
-        
+        this.token = tokens[usertoken]
     }
 
     async createUser() {
+
         await this._botLogin();
 
         await this._getAvailableId(this.displayname, 0);
@@ -33,10 +35,10 @@ class User {
 
 
     async _getAvailableId(displayname, count) {
+        // when user exist, add a counter starting on "2"
         if (count === 1) {count++}
-        console.log("get id "+this.token);
         let id = '@' + displayname.toLowerCase().replace(/[^a-z0-9]/g, "") + "" + (count || "") + ':iot-schweiz.ch';
-        await axios.get('https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + id,
+        await axios.get(app_config.matrixHost+'_synapse/admin/v2/users/' + id,
           {
             headers: {
               'Authorization': 'Bearer ' + this.access_token
@@ -66,7 +68,7 @@ class User {
     async _botLogin() {
 
         // set request url
-        let url = 'https://matrix.iot-schweiz.ch/_matrix/client/r0/login';
+        let url = app_config.matrixHost+'_matrix/client/r0/login';
 
         // set axios request config
         let config = {
@@ -79,7 +81,7 @@ class User {
         let body = {
             "identifier": {
                 "type": "m.id.user",
-                "user": process.env.MATRIX_BOT_USER,
+                "user": app_config.matrixBotUser,
             },
             "password": process.env.MATRIX_BOT_PASSWORD,
             "type": "m.login.password"
@@ -99,7 +101,7 @@ class User {
 
     async _sendUser2Matrix() {
         // set request url
-        let url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + this.id;
+        let url = app_config.matrixHost+'_synapse/admin/v2/users/' + this.id;
 
         // set axios request config
         let config = {
@@ -132,7 +134,7 @@ class User {
 
     _send3Pid2Matrix() {
         // set request url
-        let url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + this.id;
+        let url = app_config.matrixHost+'_synapse/admin/v2/users/' + this.id;
 
         // set axios request config
         let config = {
@@ -179,29 +181,26 @@ class User {
     _sendMail() {
         // create transporter object with smtp server details
         const transporter = nodemailer.createTransport({
-            host: 'sr1.iot-schweiz.ch',
-            port: 587,
+            host: app_config.mailHost,
+            port: app_config.mailPort,
             auth: {
-                user: 'matrix@iot-schweiz.ch',
+                user: app_config.mailUser,
                 pass: process.env.MAIL_PASSWORD
             }
         });
 
         // send email
         transporter.sendMail({
-            from: 'matrix@iot-schweiz.ch',
+            from: app_config.mailFrom,
             to: this.email,
-            subject: 'IOT Matrix login data',
-            html: '<h1>User is created</h1><br>you can use one of this clients....<br>...<br>...<br>...<br><br>or use matrix.iot-schweiz.ch<br><br>user: ' + this.login_name + "<br>pw: " + this.pw
+            subject: this.token.mailSubject,
+            html: this.token.mailBodyHtml.replace("%LOGIN_NAME%", this.login_name).replace("%DISPLAY_NAME%", this.displayname).replace("%PW%", this.pw)
         });
     }
 
 
     async joinToRooms(rooms) {
-        console.log("wait to join user to channel")
         await sleep(5000);
-        console.log("start joining to channels")
-        // set request url
 
         // set axios request config
         let config = {
@@ -214,8 +213,7 @@ class User {
 
         rooms.forEach(async function (room) {
 
-            let url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v1/join/' + room;
-            console.log(url);
+            let url = app_config.matrixHost+'_synapse/admin/v1/join/' + room;
 
             await axios.post(url, body, config)
                 .then(res => {
