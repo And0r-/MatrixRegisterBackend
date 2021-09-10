@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const nodemailer = require("nodemailer");
 var app_config = require('./app_config');
-var tokens = require('./tokens');
+var tokens = require('./data/tokens');
 
 class User {
     constructor(displayname, pw, email, phone, usertoken) {

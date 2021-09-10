@@ -24,3 +24,5 @@ yarn-error.log*
 
 # db connection infos, will be set via ansible
 .env
+
+/data/tokens.js
