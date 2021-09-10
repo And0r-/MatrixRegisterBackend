@@ -5,17 +5,23 @@ dotenv.config();
 const nodemailer = require("nodemailer");
 
 class User {
-    constructor(id, pw, name, email, phone) {
-        this.id = id;
+    constructor(displayname, pw, email, phone) {
+        this.displayname = displayname;
         this.pw = pw;
-        this.name = name;
         this.email = email;
         this.phone = phone || undefined;
+
+        this.access_token;
+        this.id;
+        this.login_name;
+
+        
     }
 
     async createUser() {
+        await this._botLogin();
 
-        await this._login();
+        await this._getAvailableId(this.displayname, 0);
 
         await this._sendUser2Matrix();
 
@@ -25,7 +31,38 @@ class User {
         this._sendMail();
     }
 
-    async _login() {
+
+    async _getAvailableId(displayname, count) {
+        console.log("get id "+this.token);
+        let id = '@' + displayname.toLowerCase().replace(/[^a-z0-9 ]/g, "") + "" + (count || "") + ':iot-schweiz.ch';
+        await axios.get('https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + id,
+          {
+            headers: {
+              'Authorization': 'Bearer ' + this.access_token
+            },
+            validateStatus: function (status) {
+              return status === 404 || status === 200; // Reject only if the status code is greater than or equal to 500
+            }
+          })
+          .then(async res => {
+            if (res.status === 404) {
+              console.log("return " + id);
+              this.id = id;
+              this.login_name = displayname + "" + (count || "");
+            } else if (res.status === 200) {
+              console.log("id already exist, add counter");
+              await getAvailableId(name, count + 1);
+            }
+          }
+          )
+          .catch(error => {
+            console.log("get id error..." + error)
+            return undefined;
+      
+          });
+      }
+
+    async _botLogin() {
 
         // set request url
         let url = 'https://matrix.iot-schweiz.ch/_matrix/client/r0/login';
@@ -76,7 +113,7 @@ class User {
         // set axios request body
         let body = {
             "password": this.pw,
-            "displayname": this.name,
+            "displayname": this.displayname,
             "threepids": [],
         }
 
@@ -154,7 +191,7 @@ class User {
             from: 'matrix@iot-schweiz.ch',
             to: this.email,
             subject: 'IOT Matrix login data',
-            html: '<h1>User is created</h1><br>you can use one of this clients....<br>...<br>...<br>...<br><br>or use matrix.iot-schweiz.ch<br><br>user: ' + this.id + "<br>pw: " + this.pw
+            html: '<h1>User is created</h1><br>you can use one of this clients....<br>...<br>...<br>...<br><br>or use matrix.iot-schweiz.ch<br><br>user: ' + this.login_name + "<br>pw: " + this.pw
         });
     }
 
@@ -168,7 +205,7 @@ class User {
         // set axios request config
         let config = {
             headers: {
-                'Authorization': 'Bearer ' + process.env.MATRIX_CREATE_TOKEN
+                'Authorization': 'Bearer ' + this.access_token
             }
         }
         let body = { user_id: this.id }

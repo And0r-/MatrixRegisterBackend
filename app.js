@@ -106,15 +106,13 @@ app.post('/register', async (req, res) => {
   // Check is token valid
   if (req.body.token in configs) {
 
-    let id = req.body.name.toLowerCase().replace(/[^a-z0-9 ]/g, "");
-    id = await getAvailableId(id, 0);
-
     let password = generator.generate({
       length: 10,
       numbers: true
     });
 
-    let user = new User(id, password, req.body.name, req.body.email, req.body.phone);
+    let user = await new User(req.body.name, password, req.body.email, req.body.phone);
+
     user.createUser();
 
     user.joinToRooms(configs[req.body.token].rooms);
