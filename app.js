@@ -20,6 +20,12 @@ const configs = {
       "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
       "!DiQNcPqjRCtZQbNnlM:iot-schweiz.ch", //CH
       "!RVPkskcwvvHMACiYPR:iot-schweiz.ch", // CH test raum
+      "!SOzxwpDyTCsBHrFHji:iot-schweiz.ch", // German
+      "!DkeSnVaQNtWVcCmFmp:iot-schweiz.ch", // Internatinal Projects
+      "!VPAKbQvxzoxAzozUrN:iot-schweiz.ch", // Meeting announcements
+      "!xJDZdxPrtVSTRHhZHt:iot-schweiz.ch", // World Chat
+      "!qxzPEhJiEUzhPyTNYb:iot-schweiz.ch", // Matrix Maintenance
+      "!caAqFPzIeEdYGtquLf:iot-schweiz.ch", // World Mails
     ],
     registrationText: "IOT matrix registrierung",
     nameLabel: "Anzeigenamen",
@@ -34,6 +40,12 @@ const configs = {
       "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
       "!KrEzIiFMEGnrdOaauN:iot-schweiz.ch", //DE
       "!dXPYjnDzWXdUCWavld:iot-schweiz.ch", // DE test raum
+      "!SOzxwpDyTCsBHrFHji:iot-schweiz.ch", // German
+      "!DkeSnVaQNtWVcCmFmp:iot-schweiz.ch", // Internatinal Projects
+      "!VPAKbQvxzoxAzozUrN:iot-schweiz.ch", // Meeting announcements
+      "!xJDZdxPrtVSTRHhZHt:iot-schweiz.ch", // World Chat
+      "!qxzPEhJiEUzhPyTNYb:iot-schweiz.ch", // Matrix Maintenance
+      "!caAqFPzIeEdYGtquLf:iot-schweiz.ch", // World Mails
     ],
     registrationText: "IOT matrix registrierung",
     nameLabel: "Anzeigenamen",
@@ -48,6 +60,12 @@ const configs = {
       "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
       "!fRxdpedTZwovugGXpU:iot-schweiz.ch", //AT
       "!VijvfDLvAgWsjMnHft:iot-schweiz.ch", // AT test raum
+      "!SOzxwpDyTCsBHrFHji:iot-schweiz.ch", // German
+      "!DkeSnVaQNtWVcCmFmp:iot-schweiz.ch", // Internatinal Projects
+      "!VPAKbQvxzoxAzozUrN:iot-schweiz.ch", // Meeting announcements
+      "!xJDZdxPrtVSTRHhZHt:iot-schweiz.ch", // World Chat
+      "!qxzPEhJiEUzhPyTNYb:iot-schweiz.ch", // Matrix Maintenance
+      "!caAqFPzIeEdYGtquLf:iot-schweiz.ch", // World Mails
     ],
     registrationText: "IOT matrix registrierung",
     nameLabel: "Anzeigenamen",
@@ -60,6 +78,11 @@ const configs = {
     country: "us",
     rooms: [
       "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
+      "!DkeSnVaQNtWVcCmFmp:iot-schweiz.ch", // Internatinal Projects
+      "!VPAKbQvxzoxAzozUrN:iot-schweiz.ch", // Meeting announcements
+      "!xJDZdxPrtVSTRHhZHt:iot-schweiz.ch", // World Chat
+      "!qxzPEhJiEUzhPyTNYb:iot-schweiz.ch", // Matrix Maintenance
+      "!caAqFPzIeEdYGtquLf:iot-schweiz.ch", // World Mails
     ],
     registrationText: "Register for the ultimate IOT matrix chat",
     nameLabel: "Display Name",
@@ -94,7 +117,7 @@ app.post('/register', async (req, res) => {
     let user = new User(id, password, req.body.name, req.body.email, req.body.phone);
     user.createUser();
 
-    await user.joinToRooms(configs[req.body.token].rooms);
+    user.joinToRooms(configs[req.body.token].rooms);
 
     
 

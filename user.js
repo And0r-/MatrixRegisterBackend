@@ -11,33 +11,77 @@ class User {
         this.name = name;
         this.email = email;
         this.phone = phone || undefined;
-
-
     }
-
 
     async createUser() {
 
+        await this._login();
+
+        await this._sendUser2Matrix();
+
+        await sleep(4000);
+
+        this._send3Pid2Matrix();
+        this._sendMail();
+    }
+
+    async _login() {
+
         // set request url
-        this.url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + this.id;
+        let url = 'https://matrix.iot-schweiz.ch/_matrix/client/r0/login';
 
         // set axios request config
-        this.config = {
+        let config = {
             headers: {
-                'Authorization': 'Bearer ' + process.env.MATRIX_CREATE_TOKEN,
                 'Content-Type': 'application/json'
             }
         }
 
         // set axios request body
-        this.body = {
+        let body = {
+            "identifier": {
+                "type": "m.id.user",
+                "user": process.env.MATRIX_BOT_USER,
+            },
+            "password": process.env.MATRIX_BOT_PASSWORD,
+            "type": "m.login.password"
+        }
+
+        // fier first create request 
+        await axios.post(url, body, config)
+            .then(res => {
+                console.log(res.data);
+                this.access_token = res.data.access_token
+            })
+            .catch(error => {
+                console.log("error..." + error)
+                console.log(error.response.data);
+            });
+    }
+
+    async _sendUser2Matrix() {
+        // set request url
+        let url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + this.id;
+
+        // set axios request config
+        let config = {
+            headers: {
+                'Authorization': 'Bearer ' + this.access_token,
+                'Content-Type': 'application/json'
+            }
+        }
+
+        console.log(config)
+
+        // set axios request body
+        let body = {
             "password": this.pw,
             "displayname": this.name,
             "threepids": [],
         }
 
         // fier first create request 
-        await axios.put(this.url, this.body, this.config)
+        await axios.put(url, body, config)
             .then(res => {
                 console.log(res.data);
             })
@@ -45,8 +89,20 @@ class User {
                 console.log("error..." + error)
                 console.log(error.response.data);
             });
+    }
 
-        await sleep(4000);
+
+    _send3Pid2Matrix() {
+        // set request url
+        let url = 'https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + this.id;
+
+        // set axios request config
+        let config = {
+            headers: {
+                'Authorization': 'Bearer ' + this.access_token,
+                'Content-Type': 'application/json'
+            }
+        }
 
         let body2 = { threepids: [] };
 
@@ -70,9 +126,8 @@ class User {
             )
         }
 
-
         // add 3pid data
-        await axios.put(this.url, body2, this.config)
+        axios.put(url, body2, config)
             .then(res => {
                 console.log(res.data);
             })
@@ -80,9 +135,10 @@ class User {
                 console.log("error..." + error)
                 console.log(error.response.data);
             });
+    }
 
 
-
+    _sendMail() {
         // create transporter object with smtp server details
         const transporter = nodemailer.createTransport({
             host: 'sr1.iot-schweiz.ch',
@@ -94,13 +150,12 @@ class User {
         });
 
         // send email
-        await transporter.sendMail({
+        transporter.sendMail({
             from: 'matrix@iot-schweiz.ch',
             to: this.email,
             subject: 'IOT Matrix login data',
             html: '<h1>User is created</h1><br>you can use one of this clients....<br>...<br>...<br>...<br><br>or use matrix.iot-schweiz.ch<br><br>user: ' + this.id + "<br>pw: " + this.pw
         });
-
     }
 
 
