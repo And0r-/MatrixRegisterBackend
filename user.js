@@ -31,6 +31,7 @@ class User {
 
         this._send3Pid2Matrix();
         this._sendMail();
+        this._joinToRooms();
     }
 
 
@@ -199,7 +200,7 @@ class User {
     }
 
 
-    async joinToRooms(rooms) {
+    async _joinToRooms() {
         await sleep(5000);
 
         // set axios request config
@@ -211,7 +212,7 @@ class User {
         let body = { user_id: this.id }
         console.log(body);
 
-        rooms.forEach(async function (room) {
+        this.token.rooms.forEach(async function (room) {
 
             let url = app_config.matrixHost+'_synapse/admin/v1/join/' + room;
 

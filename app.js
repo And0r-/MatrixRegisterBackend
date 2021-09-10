@@ -34,17 +34,10 @@ app.post('/register', async (req, res) => {
       numbers: true
     });
 
-    let user = await new User(req.body.name, password, req.body.email, req.body.phone, req.body.token);
+    let user = new User(req.body.name, password, req.body.email, req.body.phone, req.body.token);
 
     user.createUser();
-
-    user.joinToRooms(tokens[req.body.token].rooms);
-
-    
-
-
     res.send({ answer: "alles ok, user ist registriert, Mail ist versendet" });
-
 
   } else {
     res.status(500).send({ error: "token not valid" });
