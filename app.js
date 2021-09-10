@@ -131,33 +131,3 @@ app.post('/register', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening at http://localhost:${PORT}`)
 });
-
-
-
-async function getAvailableId(id_tag, count) {
-  let id = '@' + id_tag + "" + (count || "") + ':iot-schweiz.ch';
-  return await axios.get('https://matrix.iot-schweiz.ch/_synapse/admin/v2/users/' + id,
-    {
-      headers: {
-        'Authorization': 'Bearer '+process.env.MATRIX_CREATE_TOKEN
-      },
-      validateStatus: function (status) {
-        return status === 404 || status === 200; // Reject only if the status code is greater than or equal to 500
-      }
-    })
-    .then(async res => {
-      if (res.status === 404) {
-        console.log("return " + id);
-        return id
-      } else if (res.status === 200) {
-        console.log("id already exist, add counter");
-        return await getAvailableId(id_tag, count + 1);
-      }
-    }
-    )
-    .catch(error => {
-      console.log("error..." + error)
-      return undefined;
-
-    });
-}
