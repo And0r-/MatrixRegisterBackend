@@ -37,6 +37,5 @@
         - "49171:3001"
       restart: yes
       restart_policy: always
-      mounts:
-        target: "/app/data"
-        source: "/home/andreas/projects/MatrixRegisterBackend/data"
+      volumes:
+        - "/home/andreas/projects/MatrixRegisterBackend/data:/app/data"
