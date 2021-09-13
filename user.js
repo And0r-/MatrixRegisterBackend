@@ -39,7 +39,7 @@ class User {
     async _getAvailableId(displayname, count) {
         // when user exist, add a counter starting on "2"
         if (count === 1) {count++}
-        this.login_name = (displayname+this.post_id).replace(/[^a-zA-Z0-9]/g, "") + (count || "");
+        this.login_name = (displayname+this.post_id).replace(/[^a-zA-Z0-9\-]/g, "") + (count || "");
 
         // Login Name and ID minimun need one alphabetic letter
         if (!/[a-zA-Z]/.test(this.login_name)) {this.login_name = "a" + this.login_name}
