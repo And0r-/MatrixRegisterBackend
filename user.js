@@ -91,6 +91,8 @@ class User {
             "type": "m.login.password"
         }
 
+        console.log(body);
+
         // fier first create request 
         await axios.post(url, body, config)
             .then(res => {
