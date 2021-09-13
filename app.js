@@ -34,7 +34,7 @@ app.post('/register', async (req, res) => {
       numbers: true
     });
 
-    let user = new User(req.body.name, password, req.body.email, req.body.phone, req.body.token);
+    let user = new User(req.body.name, password, req.body.email, req.body.phone, req.body.post_id, req.body.token);
 
     user.createUser();
     res.send({ answer: "alles ok, user ist registriert, Mail ist versendet" });

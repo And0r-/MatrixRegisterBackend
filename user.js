@@ -7,10 +7,11 @@ var app_config = require('./app_config');
 var tokens = require('./data/tokens');
 
 class User {
-    constructor(displayname, pw, email, phone, usertoken) {
+    constructor(displayname, pw, email, phone, post_id, usertoken) {
         this.displayname = displayname;
         this.pw = pw;
         this.email = email;
+        this.post_id = post_id || "";
         this.phone = phone || undefined;
 
         this.access_token;
@@ -38,8 +39,13 @@ class User {
     async _getAvailableId(displayname, count) {
         // when user exist, add a counter starting on "2"
         if (count === 1) {count++}
-        let id = '@' + displayname.toLowerCase().replace(/[^a-z0-9]/g, "") + "" + (count || "") + ':iot-schweiz.ch';
-        await axios.get(app_config.matrixHost+'_synapse/admin/v2/users/' + id,
+        this.login_name = (displayname+this.post_id).replace(/[^a-zA-Z0-9]/g, "") + (count || "");
+
+        // Login Name and ID minimun need one alphabetic letter
+        if (!/[a-zA-Z]/.test(this.login_name)) {this.login_name = "a" + this.login_name}
+
+        this.id = '@' + this.login_name.toLowerCase() + ':iot-schweiz.ch';
+        await axios.get(app_config.matrixHost+'_synapse/admin/v2/users/' + this.id,
           {
             headers: {
               'Authorization': 'Bearer ' + this.access_token
@@ -50,9 +56,7 @@ class User {
           })
           .then(async res => {
             if (res.status === 404) {
-              console.log("return " + id);
-              this.id = id;
-              this.login_name = (displayname + "" + (count || "")).replace(/[^a-zA-Z0-9]/g, "");
+              console.log("final id: " + this.id);
             } else if (res.status === 200) {
               console.log("id already exist, add counter");
               await this._getAvailableId(displayname, count + 1);
@@ -62,7 +66,6 @@ class User {
           .catch(error => {
             console.log("get id error..." + error)
             return undefined;
-      
           });
       }
 
