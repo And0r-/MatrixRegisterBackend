@@ -23,18 +23,18 @@ const tokens = {
     submitLabel: "Registrieren",
     doneText: "Jea registrierung erfolgreich, du bekommst infos und passwort via Mail... <br />Wir sehen uns in Matrix <3",
     
-    mailSubject: 'Welcome on IOT Matrix, %DISPLAY_NAME%',
-    mailWelcome: 'Welcome!',
-    mailAcountReadyDesc: 'your account is ready for use',
+    mailSubject: 'Willkommen beim IOT Matrix',
+    mailWelcome: 'Willkommen!',
+    mailAcountReadyDesc: 'Dein Konto ist einsatzbereit',
     mailServerLabel: 'Server:',
     mailLoginNameLabel: 'Loginname:',
     mailPasswordLabel: 'Password:',
     mailClientLabel: 'Client:',
 
-    mailWebClientLabel: 'There is also a web client:',
+    mailWebClientLabel: 'Es gibt auch einen Web-Client:',
     mailWebClientUrl: 'https://element.iot-schweiz.ch',
 
-    mailOtherClientsLabel: 'Or choose one of these clients:',
+    mailOtherClientsLabel: 'Oder wähle einen anderen:',
 
   },
   TestTokenDE: {
@@ -59,18 +59,18 @@ const tokens = {
     submitLabel: "Registrieren",
     doneText: "Jea registrierung erfolgreich, du bekommst infos und passwort via Mail... <br />Wir sehen uns in Matrix <3",
     
-    mailSubject: 'Welcome on IOT Matrix, %DISPLAY_NAME%',
-    mailWelcome: 'Welcome!',
-    mailAcountReadyDesc: 'your account is ready for use',
+    mailSubject: 'Willkommen beim IOT Matrix',
+    mailWelcome: 'Willkommen!',
+    mailAcountReadyDesc: 'Dein Konto ist einsatzbereit',
     mailServerLabel: 'Server:',
     mailLoginNameLabel: 'Loginname:',
     mailPasswordLabel: 'Password:',
     mailClientLabel: 'Client:',
 
-    mailWebClientLabel: 'There is also a web client:',
+    mailWebClientLabel: 'Es gibt auch einen Web-Client:',
     mailWebClientUrl: 'https://element.iot-schweiz.ch',
 
-    mailOtherClientsLabel: 'Or choose one of these clients:',
+    mailOtherClientsLabel: 'Oder wähle einen anderen:',
   },
   TestTokenAT: {
     country: "at",
@@ -94,18 +94,18 @@ const tokens = {
     extraSecDesc: 'Wenn ein Hacker deine ID errät, kann er den Anzeigenamen und Provielbild abruffen. Zufällige Zeichen an die ID anhängen?',
     doneText: "Jea registrierung erfolgreich, du bekommst infos und passwort via Mail... <br />Wir sehen uns in Matrix <3",
     
-    mailSubject: 'Welcome on IOT Matrix, %DISPLAY_NAME%',
-    mailWelcome: 'Welcome!',
-    mailAcountReadyDesc: 'your account is ready for use',
+    mailSubject: 'Willkommen beim IOT Matrix',
+    mailWelcome: 'Willkommen!',
+    mailAcountReadyDesc: 'Dein Konto ist einsatzbereit',
     mailServerLabel: 'Server:',
     mailLoginNameLabel: 'Loginname:',
     mailPasswordLabel: 'Password:',
     mailClientLabel: 'Client:',
 
-    mailWebClientLabel: 'There is also a web client:',
+    mailWebClientLabel: 'Es gibt auch einen Web-Client:',
     mailWebClientUrl: 'https://element.iot-schweiz.ch',
 
-    mailOtherClientsLabel: 'Or choose one of these clients:',
+    mailOtherClientsLabel: 'Oder wähle einen anderen:',
   },
   TestTokenUS: {
     country: "us",
@@ -128,9 +128,9 @@ const tokens = {
     submitLabel: "Submit",
     doneText: "Register done :) <br />we send you a Email with a password and instructions<br />See you at Matrix",
     
-    mailSubject: 'Welcome on IOT Matrix, %DISPLAY_NAME%',
+    mailSubject: 'Welcome on IOT Matrix',
     mailWelcome: 'Welcome!',
-    mailAcountReadyDesc: 'your account is ready for use',
+    mailAcountReadyDesc: 'Your account is ready for use',
     mailServerLabel: 'Server:',
     mailLoginNameLabel: 'Loginname:',
     mailPasswordLabel: 'Password:',
