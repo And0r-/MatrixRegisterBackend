@@ -2,9 +2,15 @@ const axios = require('axios');
 var generator = require('generate-password');
 const dotenv = require('dotenv');
 dotenv.config();
+const fs = require('fs')
+const path = require('path')
 const nodemailer = require("nodemailer");
 var app_config = require('./app_config');
 var tokens = require('./data/tokens');
+
+
+
+const mailBodyHtml = fs.readFileSync(path.resolve(__dirname, 'mail/welcome.html'), 'utf8')
 
 class User {
     constructor(displayname, pw, email, phone, post_id, usertoken) {
@@ -38,41 +44,41 @@ class User {
 
     async _getAvailableId(displayname, count) {
         // when user exist, add a counter starting on "2"
-        if (count === 1) {count++}
-        this.login_name = (displayname+this.post_id).replace(/[^a-zA-Z0-9\-]/g, "") + (count || "");
+        if (count === 1) { count++ }
+        this.login_name = (displayname + this.post_id).replace(/[^a-zA-Z0-9\-]/g, "") + (count || "");
 
         // Login Name and ID minimun need one alphabetic letter
-        if (!/[a-zA-Z]/.test(this.login_name)) {this.login_name = "a" + this.login_name}
+        if (!/[a-zA-Z]/.test(this.login_name)) { this.login_name = "a" + this.login_name }
 
         this.id = '@' + this.login_name.toLowerCase() + ':iot-schweiz.ch';
-        await axios.get(app_config.matrixHost+'_synapse/admin/v2/users/' + this.id,
-          {
-            headers: {
-              'Authorization': 'Bearer ' + this.access_token
-            },
-            validateStatus: function (status) {
-              return status === 404 || status === 200; // Reject only if the status code is greater than or equal to 500
+        await axios.get(app_config.matrixHost + '_synapse/admin/v2/users/' + this.id,
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + this.access_token
+                },
+                validateStatus: function (status) {
+                    return status === 404 || status === 200; // Reject only if the status code is greater than or equal to 500
+                }
+            })
+            .then(async res => {
+                if (res.status === 404) {
+                    console.log("final id: " + this.id);
+                } else if (res.status === 200) {
+                    console.log("id already exist, add counter");
+                    await this._getAvailableId(displayname, count + 1);
+                }
             }
-          })
-          .then(async res => {
-            if (res.status === 404) {
-              console.log("final id: " + this.id);
-            } else if (res.status === 200) {
-              console.log("id already exist, add counter");
-              await this._getAvailableId(displayname, count + 1);
-            }
-          }
-          )
-          .catch(error => {
-            console.log("get id error..." + error)
-            return undefined;
-          });
-      }
+            )
+            .catch(error => {
+                console.log("get id error..." + error)
+                return undefined;
+            });
+    }
 
     async _botLogin() {
 
         // set request url
-        let url = app_config.matrixHost+'_matrix/client/r0/login';
+        let url = app_config.matrixHost + '_matrix/client/r0/login';
 
         // set axios request config
         let config = {
@@ -107,7 +113,7 @@ class User {
 
     async _sendUser2Matrix() {
         // set request url
-        let url = app_config.matrixHost+'_synapse/admin/v2/users/' + this.id;
+        let url = app_config.matrixHost + '_synapse/admin/v2/users/' + this.id;
 
         // set axios request config
         let config = {
@@ -140,7 +146,7 @@ class User {
 
     _send3Pid2Matrix() {
         // set request url
-        let url = app_config.matrixHost+'_synapse/admin/v2/users/' + this.id;
+        let url = app_config.matrixHost + '_synapse/admin/v2/users/' + this.id;
 
         // set axios request config
         let config = {
@@ -199,8 +205,27 @@ class User {
         transporter.sendMail({
             from: app_config.mailFrom,
             to: this.email,
-            subject: this.token.mailSubject,
-            html: this.token.mailBodyHtml.replace("%LOGIN_NAME%", this.login_name).replace("%DISPLAY_NAME%", this.displayname).replace("%PW%", this.pw)
+            subject: this.token.mailSubject
+                .replace("%DISPLAY_NAME%", this.displayname),
+            html: mailBodyHtml
+                .replace("%LOGIN_NAME%", this.login_name)
+                .replace("%DISPLAY_NAME%", this.displayname)
+                .replace("%PW%", this.pw)
+
+                .replace("%WELCOME%", this.token.mailWelcome)
+                .replace("%ACCOUNT_READY%", this.token.mailAcountReadyDesc)
+                .replace("%SERVER_LABEL%", this.token.mailServerLabel)
+                .replace("%LOGINNAME_LABEL%", this.token.mailLoginNameLabel)
+                .replace("%PASSWORD_LABEL%", this.token.mailPasswordLabel)
+                .replace("%CLIENT_LABEL%", this.token.mailClientLabel)
+                .replace("%WEB_CLIENT_LABEL%", this.token.mailWebClientLabel)
+                .replace(/\%WEB_CLIENT_URL\%/g, this.token.mailWebClientUrl)
+                .replace("%OTHER_CLIENT_LABEL%", this.token.mailOtherClientsLabel),
+            attachments: [{
+                filename: 'logo.jpg',
+                path: __dirname+"/mail/images/logo.jpg",
+                cid: 'unique@logo.iot'
+            }]
         });
     }
 
@@ -219,7 +244,7 @@ class User {
 
         this.token.rooms.forEach(async function (room) {
 
-            let url = app_config.matrixHost+'_synapse/admin/v1/join/' + room;
+            let url = app_config.matrixHost + '_synapse/admin/v1/join/' + room;
 
             await axios.post(url, body, config)
                 .then(res => {
