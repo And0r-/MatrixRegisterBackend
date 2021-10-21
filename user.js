@@ -1,5 +1,4 @@
 const axios = require('axios');
-var generator = require('generate-password');
 const dotenv = require('dotenv');
 dotenv.config();
 const fs = require('fs')
@@ -8,16 +7,14 @@ const nodemailer = require("nodemailer");
 var app_config = require('./app_config');
 var tokens = require('./data/tokens');
 
-
-
 const mailBodyHtml = fs.readFileSync(path.resolve(__dirname, 'mail/welcome.html'), 'utf8')
 
 class User {
-    constructor(displayname, pw, email, phone, post_id, usertoken) {
+    constructor(displayname, pw, email, phone, twofa, usertoken) {
         this.displayname = displayname;
         this.pw = pw;
         this.email = email;
-        this.post_id = post_id || "";
+        this.twofa = twofa || "email";
         this.phone = phone || undefined;
 
         this.access_token;
@@ -30,60 +27,30 @@ class User {
 
         await this._botLogin();
 
-        await this._getAvailableId(this.displayname, 0);
+        this.login_name = this.email;
 
         await this._sendUser2Matrix();
 
+        await this._getUserId();
+
+        await this._setUserPassword();
+
         await sleep(4000);
 
-        this._send3Pid2Matrix();
+        // this._send3Pid2Matrix();
         this._sendMail();
-        this._joinToRooms();
-    }
-
-
-    async _getAvailableId(displayname, count) {
-        // when user exist, add a counter starting on "2"
-        if (count === 1) { count++ }
-        this.login_name = (displayname + this.post_id).replace(/[^a-zA-Z0-9\-]/g, "") + (count || "");
-
-        // Login Name and ID minimun need one alphabetic letter
-        if (!/[a-zA-Z]/.test(this.login_name)) { this.login_name = "a" + this.login_name }
-
-        this.id = '@' + this.login_name.toLowerCase() + ':iot-schweiz.ch';
-        await axios.get(app_config.matrixHost + '_synapse/admin/v2/users/' + this.id,
-            {
-                headers: {
-                    'Authorization': 'Bearer ' + this.access_token
-                },
-                validateStatus: function (status) {
-                    return status === 404 || status === 200; // Reject only if the status code is greater than or equal to 500
-                }
-            })
-            .then(async res => {
-                if (res.status === 404) {
-                    console.log("final id: " + this.id);
-                } else if (res.status === 200) {
-                    console.log("id already exist, add counter");
-                    await this._getAvailableId(displayname, count + 1);
-                }
-            }
-            )
-            .catch(error => {
-                console.log("get id error..." + error)
-                return undefined;
-            });
+        // this._joinToRooms();
     }
 
     async _botLogin() {
 
         // set request url
-        let url = app_config.matrixHost + '_matrix/client/r0/login';
+        let url = 'https://keycloak.iot-schweiz.ch/auth/realms/master/protocol/openid-connect/token';
 
         // set axios request config
         let config = {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         }
 
@@ -97,12 +64,17 @@ class User {
             "type": "m.login.password"
         }
 
-        console.log(body);
+        const params = new URLSearchParams()
+        params.append('username', 'registerbot')
+        params.append('password', 'test')
+        params.append('grant_type', 'password')
+        params.append('client_id', 'admin-cli')
+
 
         // fier first create request 
-        await axios.post(url, body, config)
+        await axios.post(url, params, config)
             .then(res => {
-                console.log(res.data);
+                // console.log(res.data);
                 this.access_token = res.data.access_token
             })
             .catch(error => {
@@ -112,8 +84,9 @@ class User {
     }
 
     async _sendUser2Matrix() {
+
         // set request url
-        let url = app_config.matrixHost + '_synapse/admin/v2/users/' + this.id;
+        let url = 'https://keycloak.iot-schweiz.ch/auth/admin/realms/IOT/users';
 
         // set axios request config
         let config = {
@@ -123,14 +96,78 @@ class User {
             }
         }
 
-        console.log(config)
+        // set axios request body
+        let body = {
+            "email": this.email,
+            "enabled": "true",
+            "firstName": this.displayname,
+            "emailVerified": "true",
+            "groups": ["/IOT/CH/Member"]
+        }
+
+        console.log(this.twofa);
+        if (this.twofa === "authenticator") {
+            body.requiredActions = ["CONFIGURE_TOTP"]
+        }
+
+        // fier first create request 
+        await axios.post(url, body, config)
+            .then(res => {
+                // console.log(res.data); 
+            })
+            .catch(error => {
+                console.log("error..." + error)
+                console.log(error.response.data);
+            });
+    }
+
+    
+    async _getUserId() {
+
+        // set request url
+        let url = 'https://keycloak.iot-schweiz.ch/auth/admin/realms/IOT/users?email='+encodeURIComponent(this.email);
+
+        // set axios request config
+        let config = {
+            headers: {
+                'Authorization': 'Bearer ' + this.access_token,
+                'Content-Type': 'application/json'
+            }
+        }
+
+        // fier first create request 
+        await axios.get(url, config)
+            .then(res => {
+                if (res.data[0] && res.data[0].id) {
+                    this.id = res.data[0].id
+                }
+            })
+            .catch(error => {
+                console.log("error..." + error)
+                console.log(error.response.data);
+            });
+    }
+
+
+    async _setUserPassword() {
+        // set request url
+        let url = 'https://keycloak.iot-schweiz.ch/auth/admin/realms/IOT/users/'+this.id+'/reset-password';
+
+        // set axios request config
+        let config = {
+            headers: {
+                'Authorization': 'Bearer ' + this.access_token,
+                'Content-Type': 'application/json'
+            }
+        }
 
         // set axios request body
         let body = {
-            "password": this.pw,
-            "displayname": this.displayname,
-            "threepids": [],
+            // "password": this.pw,
+            "type": "password",
+            "value": this.pw
         }
+
 
         // fier first create request 
         await axios.put(url, body, config)
@@ -208,7 +245,8 @@ class User {
             subject: this.token.mailSubject
                 .replace("%DISPLAY_NAME%", this.displayname),
             html: mailBodyHtml
-                .replace("%LOGIN_NAME%", this.login_name)
+            
+                .replace(/\%LOGIN_NAME\%/g, this.login_name)
                 .replace("%DISPLAY_NAME%", this.displayname)
                 .replace("%PW%", this.pw)
 
