@@ -26,3 +26,4 @@ yarn-error.log*
 .env
 
 /data/tokens.js
+/data/dev.db

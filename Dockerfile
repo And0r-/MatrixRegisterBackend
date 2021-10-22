@@ -16,5 +16,10 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+# Generate prisma client
+RUN npx prisma db push
+RUN npx prisma migrate deploy --preview-feature
+RUN npx prisma generate
+
 EXPOSE 3001
 CMD [ "node", "app.js" ]

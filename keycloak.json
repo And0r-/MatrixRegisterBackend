@@ -1,0 +1,8 @@
+{
+    "realm": "IOT",
+    "bearer-only": true,
+    "auth-server-url": "https://keycloak.iot-schweiz.ch/auth",
+    "ssl-required": "external",
+    "resource": "IOT-projects-backend",
+    "confidential-port": 0
+}
