@@ -17,7 +17,6 @@ RUN npm install
 COPY . .
 
 # Generate prisma client
-RUN npx prisma db push
 RUN npx prisma generate
 
 EXPOSE 3001
