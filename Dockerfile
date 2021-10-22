@@ -18,7 +18,6 @@ COPY . .
 
 # Generate prisma client
 RUN npx prisma db push
-RUN npx prisma migrate deploy --preview-feature
 RUN npx prisma generate
 
 EXPOSE 3001
