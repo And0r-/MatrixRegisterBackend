@@ -73,14 +73,14 @@ app.get('/test', keycloak.protect(), function (req, res) {
 // url      String
 // video    String
 
-app.post('/test2', async (req, res) => {
+app.post('/test2', keycloak.protect(), async (req, res) => {
   const result = await prisma.project.create({
     data: req.body
   });
   res.send(result);
 });
 
-app.get('/test2', async (req, res) => {
+app.get('/test2', keycloak.protect(), async (req, res) => {
   const allProjects = await prisma.project.findMany({
     include: {
       contact: true,
