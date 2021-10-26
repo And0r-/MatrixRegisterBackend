@@ -42,7 +42,7 @@ class User {
         // this._joinToRooms();
     }
 
-    async _botLogin() {
+    async _botLogin() { 
 
         // set request url
         let url = 'https://keycloak.iot-schweiz.ch/auth/realms/master/protocol/openid-connect/token';

@@ -11,6 +11,7 @@ var Keycloak = require('keycloak-connect');
 
 var generator = require('generate-password');
 const { User } = require('./user');
+const {MatrixPromoter} = require('./MatrixPromoter')
 var tokens = require('./data/tokens');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -23,10 +24,32 @@ const prisma = new PrismaClient()
 
 var memoryStore = new session.MemoryStore();
 
+
+
+
+
+
+
+const sdk = require('matrix-js-sdk');
+// global.Olm = require('olm');
+
+// const localStorage = new LocalStorage('./scratch');
+// const {
+//   LocalStorageCryptoStore,
+// } = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store');
+
+
+
+
+
+
+
+
 app.use(session({ secret: 'some secret', resave: false, saveUninitialized: true, store: memoryStore }));
 
 var keycloak = new Keycloak({
-  store: memoryStore
+  store: memoryStore,
+  scope: 'profile'
 });
 
 app.use(keycloak.middleware());
@@ -89,6 +112,23 @@ app.get('/test2', keycloak.protect(), async (req, res) => {
   });
   res.send(allProjects);
 });
+
+app.get('/matrix_user_setup/:MToken', keycloak.protect(), async (req, res) => {
+
+  let matrixPromoter = new MatrixPromoter(req);
+  matrixPromoter.promoteUser();
+
+  
+
+
+  res.send({answer: "test ok"});
+
+});
+
+
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening at http://localhost:${PORT}`)
