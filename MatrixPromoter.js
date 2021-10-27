@@ -3,17 +3,22 @@ const dotenv = require('dotenv');
 dotenv.config();
 const fs = require('fs')
 const path = require('path')
-const nodemailer = require("nodemailer");
 var app_config = require('./app_config');
-var tokens = require('./data/tokens');
 
 const mailBodyHtml = fs.readFileSync(path.resolve(__dirname, 'mail/welcome.html'), 'utf8')
 
+// @ TODO load from config
 const keycloakGroups2MatrixRooms = {
     '/IOT/CH/Member': [
-        "asdf",
-        "asdfwe",
-        "rngewlrn",
+        "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
+        "!KrEzIiFMEGnrdOaauN:iot-schweiz.ch", //DE
+        "!dXPYjnDzWXdUCWavld:iot-schweiz.ch", // DE test raum
+        "!SOzxwpDyTCsBHrFHji:iot-schweiz.ch", // German
+        "!DkeSnVaQNtWVcCmFmp:iot-schweiz.ch", // Internatinal Projects
+        "!VPAKbQvxzoxAzozUrN:iot-schweiz.ch", // Meeting announcements
+        "!xJDZdxPrtVSTRHhZHt:iot-schweiz.ch", // World Chat
+        "!qxzPEhJiEUzhPyTNYb:iot-schweiz.ch", // Matrix Maintenance
+        "!caAqFPzIeEdYGtquLf:iot-schweiz.ch", // World Mails
     ]
 };
 
@@ -33,7 +38,7 @@ class MatrixPromoter {
 
 
         // verify Matrix token and get user id to invite in Channels
-        this.matrixUserId = await axios.post('https://matrix.agilator.ch/_matrix/client/r0/login', { type: "m.login.token", token: keycloakUserRequest.params.MToken })
+        this.matrixUserId = await axios.post(app_config.matrixHost + '_matrix/client/r0/login', { type: "m.login.token", token: keycloakUserRequest.params.MToken })
             .then(function (response) {
 
                 return response.data.user_id;
@@ -123,16 +128,16 @@ class MatrixPromoter {
 
             let url = app_config.matrixHost + '_synapse/admin/v1/join/' + room;
 
-            // console.log("url: ", url);
+            console.log("url: ", url);
 
-            // await axios.post(url, body, config)
-            //     .then(res => {
-            //         console.log(res.data);
-            //     })
-            //     .catch(error => {
-            //         console.log("error..." + error)
-            //         console.log(error.response.data);
-            //     }); 
+            await axios.post(url, body, config)
+                .then(res => {
+                    console.log(res.data);
+                })
+                .catch(error => {
+                    console.log("error..." + error)
+                    console.log(error.response.data);
+                }); 
         })
     }
 
@@ -148,7 +153,7 @@ class MatrixPromoter {
 
         console.log("config: ",config);
 
-        let body = { admin: 1 }
+        let body = { admin: this.admin }
 
         let url = app_config.matrixHost + '_synapse/admin/v2/users/' + this.matrixUserId;
 
