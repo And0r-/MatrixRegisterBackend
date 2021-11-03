@@ -105,12 +105,27 @@ app.post('/test2', keycloak.protect(), async (req, res) => {
 
 app.get('/test2', keycloak.protect(), async (req, res) => {
   const allProjects = await prisma.project.findMany({
+    where: {
+      delete: false,
+    },
     include: {
       contact: true,
     },
 
   });
   res.send(allProjects);
+});
+
+app.delete('/project/:id', keycloak.protect(), async (req, res) => {
+  const result = await prisma.project.update({
+    where: {
+      id: parseInt(req.params.id, 10),
+    },
+    data: {
+      delete: true
+    },
+  });
+  res.send(result);
 });
 
 app.get('/matrix_user_setup/:MToken', keycloak.protect(), async (req, res) => {

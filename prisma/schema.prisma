@@ -17,6 +17,7 @@ model Project {
   text     String
   url      String
   video    String
+  delete   Boolean @default(false)
   contact Contact[]
 
 }
