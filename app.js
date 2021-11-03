@@ -18,15 +18,21 @@ dotenv.config();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// app.use(express.json({limit: '50mb'}));
+// app.use(express.urlencoded({limit: '50mb'}));
 
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 var memoryStore = new session.MemoryStore();
 
+const fileController = require("./controller/file.controller");
 
 
 
+global.__basedir = __dirname;
 
 
 
@@ -139,6 +145,12 @@ app.get('/matrix_user_setup/:MToken', keycloak.protect(), async (req, res) => {
   res.send({answer: "test ok"});
 
 });
+
+
+
+app.post("/upload", fileController.upload);
+app.get("/files", fileController.getListFiles);
+app.get("/files/:name", fileController.download);
 
 
 

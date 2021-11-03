@@ -12,12 +12,14 @@
     "@prisma/client": "^3.3.0",
     "axios": "^0.23.0",
     "cors": "^2.8.5",
+    "dompurify": "^2.3.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "generate-password": "^1.6.1",
     "keycloak-connect": "^15.0.2",
     "matrix-js-sdk": "^14.0.1",
+    "multer": "^1.4.3",
     "nodemailer": "^6.7.0"
   },
   "devDependencies": {
