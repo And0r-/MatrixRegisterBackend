@@ -106,6 +106,8 @@ app.post('/test2', keycloak.protect(), async (req, res) => {
   const result = await prisma.project.create({
     data: req.body
   });
+
+  fileController.move2Project(req, res, result.id);
   res.send(result);
 });
 
@@ -148,13 +150,12 @@ app.get('/matrix_user_setup/:MToken', keycloak.protect(), async (req, res) => {
 
 
 
-app.post("/upload", fileController.upload);
-app.get("/files", fileController.getListFiles);
-app.get("/files/:name", fileController.download);
+app.post("/upload", keycloak.protect(), fileController.upload);
+app.get("/files", keycloak.protect(), fileController.getListFiles);
+app.get("/files/:name", keycloak.protect(), fileController.download);
 
 
-
-
+app.get("/projectfiles", fileController.getListProjectFiles);
 
 
 app.listen(PORT, () => {

@@ -1,10 +1,15 @@
+const fs = require("fs");
 const util = require("util");
 const multer = require("multer");
 const maxSize = 2 * 1024 * 1024;
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, __basedir + "/resources/static/assets/uploads/");
+
+      const path = __basedir + "/resources/static/assets/user_uploads/"+req.kauth.grant.access_token.content.sub+"/project_temp";
+      fs.mkdirSync(path, { recursive: true })
+      
+    cb(null, path );
   },
   filename: (req, file, cb) => {
     console.log(file.originalname);

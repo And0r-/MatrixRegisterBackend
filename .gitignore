@@ -27,3 +27,6 @@ yarn-error.log*
 
 /data/tokens.js
 /data/dev.db
+
+/resources/static/assets/uploads/*
+/resources/static/assets/user_uploads/*

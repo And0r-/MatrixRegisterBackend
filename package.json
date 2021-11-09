@@ -20,6 +20,7 @@
     "keycloak-connect": "^15.0.2",
     "matrix-js-sdk": "^14.0.1",
     "multer": "^1.4.3",
+    "mv": "^2.1.1",
     "nodemailer": "^6.7.0"
   },
   "devDependencies": {
