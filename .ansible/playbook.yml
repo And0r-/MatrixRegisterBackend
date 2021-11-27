@@ -5,7 +5,7 @@
   tasks:
   - name: checkout backend code on host
     git:
-      repo: git@github.com:And0r-/MatrixRegisterBackend.git
+      repo: https://github.com/And0r-/MatrixRegisterBackend.git
       dest: ~/projects/MatrixRegisterBackend
 
   - name: build docker image
