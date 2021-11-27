@@ -38,4 +38,4 @@
       restart: yes
       restart_policy: always
       volumes:
-        - "/home/andreas/projects/MatrixRegisterBackend/data:/app/data"
+        - "/home/drone/projects/MatrixRegisterBackend/data:/app/data"
