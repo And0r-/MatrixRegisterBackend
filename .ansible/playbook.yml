@@ -18,20 +18,13 @@
       state: present
       force_source: yes
       debug: yes
-      buildargs:
-        MATRIX_CREATE_TOKEN: "{{MATRIX_BOT_PASSWORD}}"
-        MATRIX_BOT_USER: "{{MATRIX_BOT_USER}}"
-        MAIL_PASSWORD: "{{MAIL_PASSWORD}}"
+
 
   - name: restart docker image
     become: true
     docker_container:
       name: matrix_register_backend
       image: matrix_register_backend
-      env:
-        MATRIX_CREATE_TOKEN: "{{MATRIX_BOT_PASSWORD}}"
-        MATRIX_BOT_USER: "{{MATRIX_BOT_USER}}"
-        MAIL_PASSWORD: "{{MAIL_PASSWORD}}"
       recreate: yes
       ports:
         - "49171:3001"
