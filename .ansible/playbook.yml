@@ -27,7 +27,7 @@
       image: matrix_register_backend
       recreate: yes
       ports:
-        - "49171:3001"
+        - "3001:3001"
       restart: yes
       restart_policy: always
       volumes:
