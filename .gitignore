@@ -30,3 +30,4 @@ yarn-error.log*
 
 /resources/static/assets/uploads/*
 /resources/static/assets/user_uploads/*
+data/matrix_config.js

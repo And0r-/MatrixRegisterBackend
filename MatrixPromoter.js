@@ -4,6 +4,7 @@ dotenv.config();
 const fs = require('fs')
 const path = require('path')
 var app_config = require('./app_config');
+var matrix_config = require('./data/matrix_config');
 
 const mailBodyHtml = fs.readFileSync(path.resolve(__dirname, 'mail/welcome.html'), 'utf8')
 
@@ -62,55 +63,6 @@ class MatrixPromoter {
 
 
     }
-
-
-    // _send3Pid2Matrix() {
-    //     // set request url
-    //     let url = app_config.matrixHost + '_synapse/admin/v2/users/' + this.id;
-
-    //     // set axios request config
-    //     let config = {
-    //         headers: {
-    //             'Authorization': 'Bearer ' + this.access_token,
-    //             'Content-Type': 'application/json'
-    //         }
-    //     }
-
-    //     let body2 = { threepids: [] };
-
-    //     // add phone to body
-    //     if (this.phone) {
-    //         body2.threepids.push(
-    //             {
-    //                 "medium": "msisdn",
-    //                 "address": this.phone
-    //             }
-    //         )
-    //     }
-
-    //     // add mail to body
-    //     if (this.email) {
-    //         body2.threepids.push(
-    //             {
-    //                 "medium": "email",
-    //                 "address": this.email
-    //             }
-    //         )
-    //     }
-
-    //     // add 3pid data
-    //     axios.put(url, body2, config)
-    //         .then(res => {
-    //             console.log(res.data);
-    //         })
-    //         .catch(error => {
-    //             console.log("error..." + error)
-    //             console.log(error.response.data);
-    //         });
-    // }
-
-
-
 
     async _joinToRooms(matrixRooms) {
         // await sleep(5000);
