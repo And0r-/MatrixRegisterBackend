@@ -8,21 +8,6 @@ var matrix_config = require('./data/matrix_config');
 
 const mailBodyHtml = fs.readFileSync(path.resolve(__dirname, 'mail/welcome.html'), 'utf8')
 
-// @ TODO load from config
-const keycloakGroups2MatrixRooms = {
-    '/IOT/CH/Member': [
-        "!JoPOfPBJYFmsNbflqE:iot-schweiz.ch", // IOT
-        "!KrEzIiFMEGnrdOaauN:iot-schweiz.ch", //DE
-        "!dXPYjnDzWXdUCWavld:iot-schweiz.ch", // DE test raum
-        "!SOzxwpDyTCsBHrFHji:iot-schweiz.ch", // German
-        "!DkeSnVaQNtWVcCmFmp:iot-schweiz.ch", // Internatinal Projects
-        "!VPAKbQvxzoxAzozUrN:iot-schweiz.ch", // Meeting announcements
-        "!xJDZdxPrtVSTRHhZHt:iot-schweiz.ch", // World Chat
-        "!qxzPEhJiEUzhPyTNYb:iot-schweiz.ch", // Matrix Maintenance
-        "!caAqFPzIeEdYGtquLf:iot-schweiz.ch", // World Mails
-    ]
-};
-
 class MatrixPromoter {
     constructor(req) {
         this.keycloakUserRequest = req;
@@ -57,8 +42,8 @@ class MatrixPromoter {
 
 
         for (const group of keycloakUserRequest.kauth.grant.access_token.content.groups) {
-            console.log(keycloakGroups2MatrixRooms[group]);
-            this._joinToRooms(keycloakGroups2MatrixRooms[group])
+            console.log(matrix_config[group]);
+            this._joinToRooms(matrix_config[group])
         }
 
 
