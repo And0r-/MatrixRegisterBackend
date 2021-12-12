@@ -65,8 +65,8 @@ class User {
         }
 
         const params = new URLSearchParams()
-        params.append('username', 'registerbot')
-        params.append('password', 'test')
+        params.append('username', process.env.KEYCLOAK_BOT_NAME)
+        params.append('password', process.env.KEYCLOAK_BOT_PASSWORD)
         params.append('grant_type', 'password')
         params.append('client_id', 'admin-cli')
 
