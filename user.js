@@ -43,10 +43,10 @@ class User {
     }
 
     // @TODO use keycloak admin client!
-    async _botLogin() { 
+    async _botLogin() {
 
         // set request url
-        let url = process.env.KEYCLOAK_BASE_URL+'/realms/master/protocol/openid-connect/token';
+        let url = process.env.KEYCLOAK_BASE_URL + '/realms/master/protocol/openid-connect/token';
 
         // set axios request config
         let config = {
@@ -77,7 +77,7 @@ class User {
     async _sendUser2Matrix() {
 
         // set request url
-        let url = process.env.KEYCLOAK_BASE_URL+'/admin/realms/IOT/users';
+        let url = process.env.KEYCLOAK_BASE_URL + '/admin/realms/IOT/users';
 
         // set axios request config
         let config = {
@@ -93,7 +93,7 @@ class User {
             "enabled": "true",
             "firstName": this.displayname,
             "emailVerified": "true",
-            "groups": ["/IOT/CH/Member"]
+            "groups": this.token.groups
         }
 
         console.log(this.twofa);
@@ -112,11 +112,11 @@ class User {
             });
     }
 
-    
+
     async _getUserId() {
 
         // set request url
-        let url = process.env.KEYCLOAK_BASE_URL+'/admin/realms/IOT/users?email='+encodeURIComponent(this.email);
+        let url = process.env.KEYCLOAK_BASE_URL + '/admin/realms/IOT/users?email=' + encodeURIComponent(this.email);
 
         // set axios request config
         let config = {
@@ -142,7 +142,7 @@ class User {
 
     async _setUserPassword() {
         // set request url
-        let url = process.env.KEYCLOAK_BASE_URL+'/admin/realms/IOT/users/'+this.id+'/reset-password';
+        let url = process.env.KEYCLOAK_BASE_URL + '/admin/realms/IOT/users/' + this.id + '/reset-password';
 
         // set axios request config
         let config = {
@@ -236,23 +236,22 @@ class User {
             subject: this.token.mailSubject
                 .replace("%DISPLAY_NAME%", this.displayname),
             html: mailBodyHtml
-            
+
                 .replace(/\%LOGIN_NAME\%/g, this.login_name)
                 .replace("%DISPLAY_NAME%", this.displayname)
                 .replace("%PW%", this.pw)
 
                 .replace("%WELCOME%", this.token.mailWelcome)
                 .replace("%ACCOUNT_READY%", this.token.mailAcountReadyDesc)
-                .replace("%SERVER_LABEL%", this.token.mailServerLabel)
                 .replace("%LOGINNAME_LABEL%", this.token.mailLoginNameLabel)
                 .replace("%PASSWORD_LABEL%", this.token.mailPasswordLabel)
-                .replace("%CLIENT_LABEL%", this.token.mailClientLabel)
-                .replace("%WEB_CLIENT_LABEL%", this.token.mailWebClientLabel)
-                .replace(/\%WEB_CLIENT_URL\%/g, this.token.mailWebClientUrl)
-                .replace("%OTHER_CLIENT_LABEL%", this.token.mailOtherClientsLabel),
+                .replace(/\%WEB_PROJECT_URL\%/g, this.token.mailProjectUrl)
+                .replace("%WEB_PROJECT_LABEL%", this.token.mailProjectLabel)
+                .replace(/\%WEB_ACCOUNT_MANAGE_URL\%/g, this.token.mailAccountManageUrl)
+                .replace("%WEB_ACCOUNT_MANAGE_LABEL%", this.token.mailAccountManageLabel),
             attachments: [{
                 filename: 'logo.jpg',
-                path: __dirname+"/mail/images/logo.jpg",
+                path: __dirname + "/mail/images/logo.jpg",
                 cid: 'unique@logo.iot'
             }]
         });
