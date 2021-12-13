@@ -42,26 +42,17 @@ class User {
         // this._joinToRooms();
     }
 
+    // @TODO use keycloak admin client!
     async _botLogin() { 
 
         // set request url
-        let url = 'https://keycloak.iot-schweiz.ch/auth/realms/master/protocol/openid-connect/token';
+        let url = process.env.KEYCLOAK_BASE_URL+'/realms/master/protocol/openid-connect/token';
 
         // set axios request config
         let config = {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-        }
-
-        // set axios request body
-        let body = {
-            "identifier": {
-                "type": "m.id.user",
-                "user": app_config.matrixBotUser,
-            },
-            "password": process.env.MATRIX_BOT_PASSWORD,
-            "type": "m.login.password"
         }
 
         const params = new URLSearchParams()
@@ -86,7 +77,7 @@ class User {
     async _sendUser2Matrix() {
 
         // set request url
-        let url = 'https://keycloak.iot-schweiz.ch/auth/admin/realms/IOT/users';
+        let url = process.env.KEYCLOAK_BASE_URL+'/admin/realms/IOT/users';
 
         // set axios request config
         let config = {
@@ -125,7 +116,7 @@ class User {
     async _getUserId() {
 
         // set request url
-        let url = 'https://keycloak.iot-schweiz.ch/auth/admin/realms/IOT/users?email='+encodeURIComponent(this.email);
+        let url = process.env.KEYCLOAK_BASE_URL+'/admin/realms/IOT/users?email='+encodeURIComponent(this.email);
 
         // set axios request config
         let config = {
@@ -151,7 +142,7 @@ class User {
 
     async _setUserPassword() {
         // set request url
-        let url = 'https://keycloak.iot-schweiz.ch/auth/admin/realms/IOT/users/'+this.id+'/reset-password';
+        let url = process.env.KEYCLOAK_BASE_URL+'/admin/realms/IOT/users/'+this.id+'/reset-password';
 
         // set axios request config
         let config = {
