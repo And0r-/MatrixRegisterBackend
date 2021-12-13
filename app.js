@@ -11,7 +11,6 @@ var Keycloak = require('keycloak-connect');
 
 var generator = require('generate-password');
 const { User } = require('./user');
-const {MatrixPromoter} = require('./MatrixPromoter')
 var tokens = require('./data/tokens');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -135,19 +134,6 @@ app.delete('/project/:id', keycloak.protect(), async (req, res) => {
   });
   res.send(result);
 });
-
-app.get('/matrix_user_setup/:MToken', keycloak.protect(), async (req, res) => {
-
-  let matrixPromoter = new MatrixPromoter(req);
-  matrixPromoter.promoteUser();
-
-  
-
-
-  res.send({answer: "test ok"});
-
-});
-
 
 
 app.post("/upload", keycloak.protect(), fileController.upload);
