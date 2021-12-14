@@ -110,6 +110,18 @@ app.post('/test2', keycloak.protect(), async (req, res) => {
   res.send(result);
 });
 
+app.put('/project/:id', keycloak.protect(), async (req, res) => {
+  const result = await prisma.project.update({
+    where: {
+      id: Number(req.params.id)
+    },
+    data: req.body
+  });
+
+  fileController.move2Project(req, res, result.id);
+  res.send(result);
+});
+
 app.get('/test2', keycloak.protect(), async (req, res) => {
   const allProjects = await prisma.project.findMany({
     where: {
@@ -121,6 +133,20 @@ app.get('/test2', keycloak.protect(), async (req, res) => {
 
   });
   res.send(allProjects);
+});
+
+app.get('/project/:id', keycloak.protect(), async (req, res) => {
+  const Project = await prisma.project.findFirst({
+    where: {
+      delete: false,
+      id: Number(req.params.id)
+    },
+    include: {
+      contact: true,
+    },
+
+  });
+  res.send(Project);
 });
 
 app.delete('/project/:id', keycloak.protect(), async (req, res) => {
