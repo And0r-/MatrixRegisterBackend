@@ -183,7 +183,7 @@ app.get('/levenshtein', (req, res) => {
     res.send('<html><body>' + distance(...names.split(',')) + '</body></html>');
   } else {
     // We need 2 name params, send 404
-    res.status(404).send({ error: "Parameter names=<string1>,<string2> needet" });
+    res.status(404).send({ error: "Parameter names=<string1>,<string2> needed" });
   }
 });
 
