@@ -169,21 +169,21 @@ app.get("/files/:name", keycloak.protect(), fileController.download);
 
 // return levenshtein distance
 // usage
-// params: name = <string1> , <string2>
+// params: names = <string1> , <string2>
 app.get('/levenshtein', (req, res) => {
   // Load levenshtein node modul
   const {distance} = require('fastest-levenshtein')
 
-  // Split names param from url request 
-  const names = req.query.names.split(',');
+  // get names param
+  const names = req.query.names;
 
   // Validation 
-  if (names.length === 2) {
+  if (names && names.split(',').length === 2) {
     // Return levenshtein distance
-    res.send('<html><body>'+distance(...names)+'</body></html>');
+    res.send('<html><body>' + distance(...names.split(',')) + '</body></html>');
   } else {
     // We need 2 name params, send 404
-    res.status(404).send({ error: "Parameter name=<string1>,<string2> needet" });
+    res.status(404).send({ error: "Parameter names=<string1>,<string2> needet" });
   }
 });
 
