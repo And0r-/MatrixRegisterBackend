@@ -175,7 +175,7 @@ app.get('/levenshtein', (req, res) => {
   const {distance} = require('fastest-levenshtein')
 
   // Split names param from url request 
-  const names = req.query.name.split(',');
+  const names = req.query.names.split(',');
 
   // Validation 
   if (names.length === 2) {
