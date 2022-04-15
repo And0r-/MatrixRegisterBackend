@@ -174,7 +174,7 @@ app.get('/levenshtein', (req, res) => {
   // Load levenshtein node modul
   const {distance} = require('fastest-levenshtein')
 
-  // get names param
+  // Get names param
   const names = req.query.names;
 
   // Validation 
