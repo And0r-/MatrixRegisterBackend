@@ -39,6 +39,7 @@ class User {
 
         // this._send3Pid2Matrix();
         this._sendMail();
+        this._sendAdminMail();
         // this._joinToRooms();
     }
 
@@ -255,6 +256,28 @@ class User {
                 cid: 'unique@logo.iot'
             }]
         });
+    }
+
+    _sendAdminMail() {
+        if (this.token.registrationNotifications) {
+            // create transporter object with smtp server details
+            const transporter = nodemailer.createTransport({
+                host: app_config.mailHost,
+                port: app_config.mailPort,
+                auth: {
+                    user: app_config.mailUser,
+                    pass: process.env.MAIL_PASSWORD
+                }
+            });
+
+            // send email
+            transporter.sendMail({
+                from: app_config.mailFrom,
+                to: this.token.registrationNotifications.join(),
+                subject: "New IOT Cyber User "+this.displayname,
+                html: "New IOT Cyber User is registrated:<br>name: "+this.displayname+"<br>mail: "+this.email+"<br>2FA: "+this.twofa
+            });
+        }
     }
 
 

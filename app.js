@@ -70,6 +70,12 @@ app.get('/config/:token', (req, res) => {
 app.post('/register', async (req, res) => {
   // Check is token valid
   if (req.body.token in tokens) {
+    if (tokens[req.body.token].emailAllowedDomain) {
+      if (!req.body.email.endsWith(tokens[req.body.token].emailAllowedDomain)) {
+        res.status(500).send({ error: "email not valid" });
+        return
+      }
+    }
 
     let password = generator.generate({
       length: 10,
