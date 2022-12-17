@@ -250,7 +250,7 @@ class User {
                 .replace("%WEB_PROJECT_LABEL%", this.token.mailProjectLabel)
                 .replace(/\%WEB_ACCOUNT_MANAGE_URL\%/g, this.token.mailAccountManageUrl)
                 .replace("%WEB_ACCOUNT_MANAGE_LABEL%", this.token.mailAccountManageLabel),
-                text: `${this.token.mailWelcome} ${this.displaynam}
+            text: `${this.token.mailWelcome} ${this.displaynam}
 ${this.token.mailAcountReadyDesc}
 ${this.token.mailLoginNameLabel} ${this.login_name}
 ${this.token.mailPasswordLabel} ${this.pw}
