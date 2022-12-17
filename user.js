@@ -250,6 +250,14 @@ class User {
                 .replace("%WEB_PROJECT_LABEL%", this.token.mailProjectLabel)
                 .replace(/\%WEB_ACCOUNT_MANAGE_URL\%/g, this.token.mailAccountManageUrl)
                 .replace("%WEB_ACCOUNT_MANAGE_LABEL%", this.token.mailAccountManageLabel),
+                text: `${this.token.mailWelcome} ${this.displaynam}
+${this.token.mailAcountReadyDesc}
+${this.token.mailLoginNameLabel} ${this.login_name}
+${this.token.mailPasswordLabel} ${this.pw}
+${this.token.mailProjectLabel} ${this.token.mailProjectUrl}
+
+ps: you fucking bastard read this mail in text format and ignore my beatiful html mail.
+                `,
             attachments: [{
                 filename: 'logo.jpg',
                 path: __dirname + "/mail/images/logo.jpg",
@@ -274,8 +282,11 @@ class User {
             transporter.sendMail({
                 from: app_config.mailFrom,
                 to: this.token.registrationNotifications.join(),
-                subject: "New IOT Cyber User "+this.displayname,
-                html: "New IOT Cyber User is registrated:<br>name: "+this.displayname+"<br>mail: "+this.email+"<br>2FA: "+this.twofa
+                subject: `New IOT Cyber User ${this.displayname}`,
+                text: `New IOT Cyber User is registrated:
+Name: ${this.displayname}
+Mail: ${this.email}
+2FA: ${this.twofa}`
             });
         }
     }
