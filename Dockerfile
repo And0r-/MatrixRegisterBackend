@@ -17,8 +17,8 @@ RUN npm install
 COPY . .
 
 # Generate prisma client
-# RUN npx prisma generate
+RUN npx prisma generate
 
 EXPOSE 3001
-# CMD [ "node", "app.js" ]
-CMD ["bin/startup.sh"]
+CMD [ "node", "app.js" ]
+# CMD ["bin/startup.sh"]
