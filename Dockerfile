@@ -20,5 +20,5 @@ COPY . .
 # RUN npx prisma generate
 
 EXPOSE 3001
-# CMD [ "node", "app.js" ]
-CMD ["bin/startup.sh"]
+CMD [ "node", "app.js" ]
+# CMD ["bin/startup.sh"]
