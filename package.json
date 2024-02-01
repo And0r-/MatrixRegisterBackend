@@ -22,7 +22,7 @@
     "matrix-js-sdk": "^18.1.0",
     "multer": "^1.4.4",
     "mv": "^2.1.1",
-    "nodemailer": "^6.7.5"
+    "nodemailer": "^6.9.9"
   },
   "devDependencies": {
     "prisma": "^3.15.2"
