@@ -14,7 +14,7 @@
     "cors": "^2.8.5",
     "dompurify": "^2.3.8",
     "dotenv": "^16.0.1",
-    "express": "^4.18.1",
+    "express": "^4.21.0",
     "express-session": "^1.17.3",
     "fastest-levenshtein": "^1.0.12",
     "generate-password": "^1.7.0",
